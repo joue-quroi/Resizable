@@ -111,11 +111,13 @@ Resizable.prototype.init = function() {
   // positioning
   const place = () => {
     storage.slice(0, -1).forEach(o => {
-      o.div.style.left = o.td.getBoundingClientRect().right - opts.width - opts.offset + 'px';
+      const {right} = o.td.getBoundingClientRect();
+      o.div.style.left = right - opts.width - opts.offset + 'px';
     });
     this.emit('draw');
   };
   place();
+  window.addEventListener('resize', place);
 };
 Resizable.prototype.id = function(id) {
   const sid = id || this.opts.id || this.e.id || this.e.name;
