@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+  <style>
+    table {
+      background-color: rgba(0, 0, 0, 0.1);
+      user-select: none;
+    }
+  </style>
+  <table width="50%" id="my-table">
+    <tr>
+      <td>row 1</td>
+      <td>row 1</td>
+      <td>row 1</td>
+      <td>row 1</td>
+    </tr>
+    <tr>
+      <td>row 2</td>
+      <td>row 2</td>
+      <td>row 2</td>
+      <td>row 2</td>
+    </tr>
+    <tr>
+      <td>row 3</td>
+      <td>row 3</td>
+      <td>row 3</td>
+      <td>row 3</td>
+    </tr>
+  </table>
+  <div id="info"></div>
+  <div id="array"></div>
+  <script src="../resizable.js"></script>
+  <script>
+    var resizable = new Resizable(document.getElementById('my-table'));
+    resizable.on('draw', () => {
+      document.getElementById('array').textContent = 'draw event:' + resizable.array().join(', ') + ' of ' + resizable.width;
+    });
+    resizable.on('resizing', bol => {
+      document.getElementById('info').textContent = 'resize event: ' + bol;
+    });
+  </script>
+</body>
+</html>

@@ -13,6 +13,7 @@ var Resizable = function(e, opts = {}) {
   this.version = '0.1.0';
   this.element = e;
   this.opts = e;
+  this.callbacks = {};
   e.style.position = 'relative';
 
   opts = Object.assign({
@@ -22,7 +23,10 @@ var Resizable = function(e, opts = {}) {
     'background-color': 'rgba(0, 0, 0, 0.1)'
   }, opts);
   //
-  const storage = [...e.querySelectorAll('tr:first-child td')].map(td => ({
+  const storage = [
+    ...e.querySelectorAll('tr:first-child td'),
+    ...e.querySelectorAll('tr:first-child th')
+  ].map(td => ({
     td
   }));
   this.storage = storage;
@@ -48,7 +52,7 @@ var Resizable = function(e, opts = {}) {
     o.width = o.td.getBoundingClientRect().width;
   });
   // save table width
-  const width = storage.reduce((p, c) => p + c.width, 0);
+  const width = this.width = storage.reduce((p, c) => p + c.width, 0);
   // set width for each col element
   [...e.querySelectorAll('col')].slice(0, storage.length).forEach((col, i) => {
     col.width = (storage[i].width / width * 100) + '%';
@@ -79,6 +83,7 @@ var Resizable = function(e, opts = {}) {
     };
 
     div.addEventListener('mousedown', e => {
+      this.emit('resizing', true);
       for (const o of storage) {
         if (o.div === e.target) {
           index = storage.indexOf(o);
@@ -88,6 +93,7 @@ var Resizable = function(e, opts = {}) {
       storage[index + 1].col.removeAttribute('width');
       window.addEventListener('mousemove', move, true);
       window.addEventListener('mouseup', () => {
+        this.emit('resizing', false);
         window.removeEventListener('mousemove', move, true);
         storage[index + 1].width = storage[index + 1].td.getBoundingClientRect().width;
         storage[index + 1].col.width = (storage[index + 1].width / width * 100) + '%';
@@ -103,6 +109,7 @@ var Resizable = function(e, opts = {}) {
   // positioning
   const place = () => storage.slice(0, -1).forEach(o => {
     o.div.style.left = o.td.getBoundingClientRect().right - opts.width - opts.offset + 'px';
+    this.emit('draw');
   });
   place();
 };
@@ -110,12 +117,15 @@ Resizable.prototype.id = function(id) {
   const sid = id || this.opts.id || this.element.id || this.element.name;
   return sid ? 'resizable-' + sid : '';
 };
+Resizable.prototype.array = function() {
+  return this.storage.map(o => {
+    return o.td.getBoundingClientRect().width;
+  });
+};
 Resizable.prototype.save = function(id) {
   const sid = this.id(id);
   if (sid) {
-    localStorage.setItem(sid, JSON.stringify(this.storage.map(o => {
-      return o.td.getBoundingClientRect().width;
-    })));
+    localStorage.setItem(sid, JSON.stringify(this.array()));
   }
   else {
     throw Error('to save state, storage id is required');
@@ -134,4 +144,13 @@ Resizable.prototype.restore = function(id) {
   else {
     console.warn('to restore state, storage id is required');
   }
+};
+// Events
+Resizable.prototype.on = function(name, callback) {
+  this.callbacks[name] = this.callbacks[name] || [];
+  this.callbacks[name].push(callback);
+};
+// Events
+Resizable.prototype.emit = function(name, data) {
+  (this.callbacks[name] || []).forEach(c => c(data));
 };
