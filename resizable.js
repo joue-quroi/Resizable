@@ -1,6 +1,16 @@
 'use strict';
 
+/* Copyright (C) 2014-2017 joue.quroi@openmail.cc
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * GitHub: https://github.com/joue-quroi/Resizable
+*/
+
 var Resizable = function(e, opts = {}) {
+  this.version = '0.1.0';
   this.element = e;
   this.opts = e;
   e.style.position = 'relative';
