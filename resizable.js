@@ -11,17 +11,19 @@
 
 var Resizable = function(e, opts = {}) {
   this.version = '0.1.0';
-  this.element = e;
-  this.opts = e;
+  this.e = e;
   this.callbacks = {};
   e.style.position = 'relative';
 
-  opts = Object.assign({
+  this.opts = opts = Object.assign({
     'width': 6, // width of the draggable
     'offset': 6, // offset for placing the draggable
     'min': 50, // minimum block size
     'background-color': 'rgba(0, 0, 0, 0.1)'
   }, opts);
+};
+Resizable.prototype.init = function() {
+  const {e, opts} = this;
   //
   const storage = [
     ...e.querySelectorAll('tr:first-child td'),
@@ -107,14 +109,16 @@ var Resizable = function(e, opts = {}) {
   });
 
   // positioning
-  const place = () => storage.slice(0, -1).forEach(o => {
-    o.div.style.left = o.td.getBoundingClientRect().right - opts.width - opts.offset + 'px';
+  const place = () => {
+    storage.slice(0, -1).forEach(o => {
+      o.div.style.left = o.td.getBoundingClientRect().right - opts.width - opts.offset + 'px';
+    });
     this.emit('draw');
-  });
+  };
   place();
 };
 Resizable.prototype.id = function(id) {
-  const sid = id || this.opts.id || this.element.id || this.element.name;
+  const sid = id || this.opts.id || this.e.id || this.e.name;
   return sid ? 'resizable-' + sid : '';
 };
 Resizable.prototype.array = function() {

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+  <style>
+    table {
+      background-color: rgba(0, 0, 0, 0.1);
+      user-select: none;
+    }
+  </style>
+  <table width="100%" id="my-table">
+    <thead>
+      <tr>
+        <th>header 1</th>
+        <th>header 2</th>
+        <th>header 3</th>
+      </tr>
+    </thead>
+  </table>
+  Attached table (some where in the document)
+  <table width="100%" id="attached">
+    <colgroup>
+      <col>
+      <col>
+      <col>
+    </colgroup>
+    <tbody>
+      <tr>
+        <td>tbody 1</td>
+        <td>tbody 1</td>
+        <td>tbody 1</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script src="../resizable.js"></script>
+  <script>
+    var resizable = new Resizable(document.getElementById('my-table'));
+    resizable.on('draw', () => {
+      const array = resizable.array();
+      [...document.querySelectorAll('#attached col')].forEach((col, i) => {
+        col.width = array[i];
+      });
+    });
+    resizable.init();
+  </script>
+</body>
+</html>
