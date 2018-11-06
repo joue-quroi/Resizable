@@ -25,10 +25,11 @@ var Resizable = function(e, opts = {}) {
 Resizable.prototype.init = function() {
   const {e, opts} = this;
   //
-  const storage = [
-    ...e.querySelectorAll('tr:first-child td'),
-    ...e.querySelectorAll('tr:first-child th')
-  ].map(td => ({
+  const cells = [...e.querySelectorAll('tr:first-child th')];
+  if (cells.length === 0) {
+    cells.push(...e.querySelectorAll('tr:first-child td'));
+  }
+  const storage = cells.map(td => ({
     td
   }));
   this.storage = storage;
